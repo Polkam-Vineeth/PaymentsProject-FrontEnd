@@ -1,0 +1,16 @@
+.brand-logo {
+  height: 100%;
+  width: 75px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.top-bar {
+  box-shadow: 0 0 5px 0 rgb(0, 0, 0);
+}
+.top-bar button {
+  margin-right: 10px;
+}
+.flex-fill {
+  flex-grow: 4;
+}
