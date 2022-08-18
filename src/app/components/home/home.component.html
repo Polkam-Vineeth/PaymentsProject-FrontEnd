@@ -2,26 +2,28 @@
 <mat-stepper class="example-stepper"
   [orientation]="(stepperOrientation | async)!">
 
-  <mat-step [stepControl]="firstFormGroup" label="SEND FROM">
-    <form [formGroup]="firstFormGroup">
+  <!-- Sender Form -->
+  <mat-step [stepControl]="senderFormGroup" label="SEND FROM">
+    <form [formGroup]="senderFormGroup">
       <mat-form-field appearance="fill">
         <mat-label>Sender A/C Number</mat-label>
-        <input matInput placeholder="Sender Account Number" formControlName="firstCtrl" required>
+        <input (focusout)="getcustomerDetails()" (keyup.enter)="getcustomerDetails()" matInput
+          placeholder="Sender Account Number" formControlName="accountNumber" required>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Sender Name</mat-label>
-        <input matInput placeholder="Sender Name" formControlName="firstCtrl" required>
+        <input matInput placeholder="Sender Name" formControlName="accountName" required>
       </mat-form-field>
       <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Sender BIC</mat-label>
-        <input matInput placeholder="Bank Identifier Code" formControlName="firstCtrl" required>
+      <!-- <mat-form-field appearance="fill">
+          <mat-label>Sender BIC</mat-label>
+          <input matInput placeholder="Bank Identifier Code" formControlName="firstCtrl" required>
       </mat-form-field>
-      <br>
+      <br> -->
       <mat-form-field appearance="fill">
         <mat-label>Clear Balance</mat-label>
-        <input matInput placeholder="Clear Balance" formControlName="firstCtrl" required>
+        <input matInput placeholder="Clear Balance" formControlName="clearBalance" required>
       </mat-form-field>
       <div>
         <button mat-button matStepperNext>Next</button>
@@ -29,26 +31,27 @@
     </form>
   </mat-step>
   
-  <mat-step [stepControl]="secondFormGroup" label="SEND TO">
-    <form [formGroup]="secondFormGroup">
+  <!-- Receiver Form -->
+  <mat-step [stepControl]="receiverFormGroup" label="SEND TO">
+    <form [formGroup]="receiverFormGroup">
       <mat-form-field appearance="fill">
         <mat-label>Receiver A/C Number</mat-label>
-        <input matInput formControlName="secondCtrl" placeholder="Ex. 12551431240" required>
+        <input matInput formControlName="receiverAccountNumber" placeholder="Ex. 12551431240" required>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Receiver Name</mat-label>
-        <input matInput formControlName="secondCtrl" placeholder="Ex. Rolex" required>
+        <input matInput formControlName="receiverAccountName" placeholder="Ex. Rolex" required>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Receiver BIC</mat-label>
-        <input matInput formControlName="secondCtrl" placeholder="Bank Identifier Code" required>
+        <input (focusout)="getBankDetails()" (keyup.enter)="getBankDetails()" matInput formControlName="bic" placeholder="Bank Identifier Code" required>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Receiver Bank Name</mat-label>
-        <input matInput formControlName="secondCtrl" placeholder="Ex. DBS Bank" required>
+        <input matInput formControlName="receiverBankName" placeholder="Ex. DBS Bank" required>
       </mat-form-field>
       <br>
       <div>
@@ -58,12 +61,13 @@
     </form>
   </mat-step>
 
-  <mat-step>
-    <ng-template matStepLabel>PAYMENT DETAILS</ng-template>
+  <!-- Payment Form -->
+  <mat-step [stepControl]="paymentFormGroup"  label="PAYMENT DETAILS">
+    <form [formGroup]="paymentFormGroup">
     <!-- <p>You are now almost done. {{selectedValue}}</p> -->
     <mat-form-field appearance="fill">
       <mat-label>Transfer Type</mat-label>
-      <mat-select [(value)]="selectedValue" [errorStateMatcher]="matcher" required>
+      <mat-select formControlName="transferType" [(value)]="selectedValue" [errorStateMatcher]="matcher" required>
         <mat-option>Clear</mat-option>
         <mat-option value="Customer Transfer">Customer Transfer</mat-option>
         <mat-option value="Bank Transfer">Bank Transfer</mat-option>
@@ -78,7 +82,7 @@
 
     <mat-form-field appearance="fill">
       <mat-label>Message Code</mat-label>
-      <mat-select [(ngModel)]="selectedValue2"  name="msgcode" required>
+      <mat-select formControlName="messageCode" [(ngModel)]="selectedValue2"  name="msgcode" required>
         <mat-option *ngFor="let msgcode of msgcodes" [value]="msgcode.value">
           {{msgcode.viewValue}}
         </mat-option>
@@ -89,14 +93,14 @@
     <br>
     <mat-form-field appearance="fill" >
       <mat-label>Currency</mat-label>
-      <mat-select [(ngModel)]="selectedValue3" (change)="changeCurrency($event)" name="curency" required>
+      <mat-select formControlName="currencyCode" [(ngModel)]="selectedValue3"  name="curency" required>
         <mat-option *ngFor="let currency of currencyCodes" [value]="currency">{{currency}}</mat-option>
       </mat-select>
     </mat-form-field>
     <br>
       <mat-form-field appearance="fill">
         <mat-label>Amount</mat-label>
-        <input matInput [(ngModel)]="amountvalue" placeholder="Transfer Amount" required>
+        <input matInput formControlName="amount" [(ngModel)]="amountvalue" placeholder="Transfer Amount" required>
       </mat-form-field>
       
       <!-- <p>Amount \alue in Indian Currency : {{amountvalue | conversion:selectedValue3 | currency:code }}</p> -->
@@ -104,16 +108,18 @@
     
       <mat-form-field appearance="fill">
         <mat-label>Amount in INR</mat-label>
-        <input matInput placeholder="Amount in INR" value="{{amountvalue | conversion:selectedValue3 | currency:code }}" required>
+        <input matInput formControlName="totalAmount" placeholder="Amount in INR" value="{{amountvalue | conversion:selectedValue3 | currency:code }}" required>
       </mat-form-field>
       <br>
-      <input hidden matInput placeholder="Amount in INR" value="{{amountvalue | conversion:selectedValue3 | taransactionfee }}" id="vin" required>
+      <input hidden matInput placeholder="Amount in INR" value="{{amountvalue | conversion:selectedValue3 | number : '1.2-2' }}" id="vin" required>
    
       <mat-hint>Transaction Fee (0.25%) : {{ amountvalue | conversion:selectedValue3 | taransactionfee }}</mat-hint>
     <div>
       <button mat-button matStepperPrevious>Back</button>
-      <button mat-raised-button (click)="OnTransfer()" color="dark">Transfer</button>
+      <button mat-raised-button [disabled]="senderFormGroup.invalid || receiverFormGroup.invalid || paymentFormGroup.invalid"
+       (click)="onSubmit()" color="dark">Transfer</button>
     </div>
+  </form>
   </mat-step>
 </mat-stepper>
 </div>
